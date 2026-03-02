@@ -1,11 +1,33 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { MapPin, Calendar } from "lucide-react";
+import { MapPin, Calendar, ImageOff, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import type { Review } from "@/lib/mockData";
 
 interface ReviewCardProps {
   review: Review;
   index?: number;
+}
+
+function CardImage({ src, alt }: { src: string; alt: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-muted-foreground text-sm bg-muted">
+        <ImageOff className="h-8 w-8" />
+        <span>Imagen no disponible</span>
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  );
 }
 
 export default function ReviewCard({ review, index = 0 }: ReviewCardProps) {
@@ -15,19 +37,21 @@ export default function ReviewCard({ review, index = 0 }: ReviewCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
     >
-      <Link to={`/resenas/${review.slug}`} className="group block card-hover">
+      <Link
+        to={`/resenas/${encodeURIComponent(review.slug ?? "")}`}
+        className="group block card-hover cursor-pointer rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+      >
         <div className="bg-card rounded-lg overflow-hidden shadow-sm border border-border">
-          <div className="aspect-[4/3] overflow-hidden">
-            <img
-              src={review.images[0]}
-              alt={review.name}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              loading="lazy"
-            />
+          <div className="aspect-[4/3] overflow-hidden bg-muted">
+            {review.images?.[0] ? (
+              <CardImage src={review.images[0]} alt={review.name} />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">Sin imagen</div>
+            )}
           </div>
           <div className="p-5">
             <div className="flex flex-wrap gap-2 mb-3">
-              {review.foodTypes.map(type => (
+              {(review.foodTypes ?? []).map(type => (
                 <span key={type} className="text-xs font-medium bg-primary/10 text-primary px-2.5 py-1 rounded-full">
                   {type}
                 </span>
@@ -46,9 +70,12 @@ export default function ReviewCard({ review, index = 0 }: ReviewCardProps) {
               </span>
               <span className="flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5" />
-                {new Date(review.visitDate).toLocaleDateString("es-ES", { month: "short", year: "numeric" })}
+                {review.visitDate ? new Date(review.visitDate).toLocaleDateString("es-ES", { month: "short", year: "numeric" }) : "—"}
               </span>
             </div>
+            <p className="text-xs font-medium text-primary mt-3 flex items-center gap-1 group-hover:gap-2 transition-all">
+              Ver toda la info <ChevronRight className="h-3.5 w-3.5" />
+            </p>
           </div>
         </div>
       </Link>

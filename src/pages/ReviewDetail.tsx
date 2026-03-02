@@ -1,8 +1,24 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, MapPin, Calendar, ExternalLink, Instagram } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, ExternalLink, Instagram, ImageOff } from "lucide-react";
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
-import { mockReviews } from "@/lib/mockData";
+import { useReviewBySlug } from "@/hooks/useReviews";
+
+function DetailHeroImage({ src, alt }: { src: string; alt: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-muted-foreground bg-muted">
+        <ImageOff className="h-12 w-12" />
+        <span>Imagen no disponible</span>
+      </div>
+    );
+  }
+  return (
+    <img src={src} alt={alt} className="w-full h-full object-cover" onError={() => setFailed(true)} />
+  );
+}
 
 const TikTokIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
@@ -11,8 +27,31 @@ const TikTokIcon = () => (
 );
 
 export default function ReviewDetail() {
-  const { slug } = useParams();
-  const review = mockReviews.find(r => r.slug === slug);
+  const { slug: slugParam } = useParams();
+  const slug = slugParam ? decodeURIComponent(slugParam) : undefined;
+  const { data: review, isLoading, error } = useReviewBySlug(slug);
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="container py-20 text-center">
+          <p className="text-muted-foreground">Cargando reseña...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="container py-20 text-center max-w-lg mx-auto">
+          <p className="text-destructive mb-2 font-medium">Error al cargar la reseña.</p>
+          <p className="text-sm text-muted-foreground mb-6">{error.message}</p>
+          <Link to="/resenas" className="text-primary hover:underline">Volver a reseñas</Link>
+        </div>
+      </Layout>
+    );
+  }
 
   if (!review) {
     return (
@@ -35,13 +74,15 @@ export default function ReviewDetail() {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             {/* Hero image */}
-            <div className="aspect-[16/9] rounded-lg overflow-hidden mb-8">
-              <img src={review.images[0]} alt={review.name} className="w-full h-full object-cover" />
-            </div>
+            {(review.images?.length ?? 0) > 0 && (
+              <div className="aspect-[16/9] rounded-lg overflow-hidden mb-8 bg-muted">
+                <DetailHeroImage src={review.images[0]} alt={review.name} />
+              </div>
+            )}
 
             {/* Tags */}
             <div className="flex flex-wrap gap-2 mb-4">
-              {review.foodTypes.map(type => (
+              {(review.foodTypes ?? []).map(type => (
                 <span key={type} className="text-xs font-medium bg-primary/10 text-primary px-3 py-1 rounded-full">
                   {type}
                 </span>
@@ -56,7 +97,9 @@ export default function ReviewDetail() {
               </span>
               <span className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                {new Date(review.visitDate).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
+                {review.visitDate
+                  ? new Date(review.visitDate).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })
+                  : "—"}
               </span>
             </div>
 
@@ -65,13 +108,33 @@ export default function ReviewDetail() {
             </div>
 
             {/* Gallery */}
-            {review.images.length > 1 && (
+            {(review.images?.length ?? 0) > 1 && (
               <div className="grid grid-cols-2 gap-3 mb-10">
-                {review.images.slice(1).map((img, i) => (
-                  <div key={i} className="aspect-square rounded-lg overflow-hidden">
-                    <img src={img} alt={`${review.name} foto ${i + 2}`} className="w-full h-full object-cover" loading="lazy" />
+                {review.images!.slice(1).map((img, i) => (
+                  <div key={i} className="aspect-square rounded-lg overflow-hidden bg-muted">
+                    <DetailHeroImage src={img} alt={`${review.name} foto ${i + 2}`} />
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* Vídeos */}
+            {(review.videos?.length ?? 0) > 0 && (
+              <div className="mb-10">
+                <h3 className="text-sm font-semibold text-foreground mb-3">Vídeos</h3>
+                <div className="flex flex-wrap gap-2">
+                  {review.videos!.map((url, i) => (
+                    <a
+                      key={i}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-secondary text-secondary-foreground px-4 py-2.5 rounded-full text-sm font-medium hover:bg-secondary/80 transition-colors"
+                    >
+                      <ExternalLink className="h-4 w-4" /> Ver vídeo {i + 1}
+                    </a>
+                  ))}
+                </div>
               </div>
             )}
 

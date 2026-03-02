@@ -14,7 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      reviews: {
+        Row: {
+          id: string
+          name: string
+          slug: string
+          review_text: string
+          city: string
+          food_types: string[]
+          visit_date: string
+          images: string[]
+          videos: string[]
+          google_maps_url: string | null
+          instagram_url: string | null
+          tiktok_url: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          slug: string
+          review_text: string
+          city: string
+          food_types: string[]
+          visit_date: string
+          images?: string[]
+          videos?: string[]
+          google_maps_url?: string | null
+          instagram_url?: string | null
+          tiktok_url?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          slug?: string
+          review_text?: string
+          city?: string
+          food_types?: string[]
+          visit_date?: string
+          images?: string[]
+          videos?: string[]
+          google_maps_url?: string | null
+          instagram_url?: string | null
+          tiktok_url?: string | null
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

@@ -2,19 +2,23 @@ import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
 import ReviewCard from "@/components/ReviewCard";
-import { mockReviews, allCities, allFoodTypes } from "@/lib/mockData";
+import { useReviews } from "@/hooks/useReviews";
 
 export default function Reviews() {
   const [cityFilter, setCityFilter] = useState("");
   const [foodFilter, setFoodFilter] = useState("");
+  const { data: reviews = [], isLoading, error } = useReviews();
 
-  const filtered = useMemo(() => {
-    return mockReviews.filter(r => {
+  const { filtered, allCities, allFoodTypes } = useMemo(() => {
+    const cities = [...new Set(reviews.map(r => r.city))];
+    const foodTypes = [...new Set(reviews.flatMap(r => r.foodTypes))];
+    const filteredList = reviews.filter(r => {
       if (cityFilter && r.city !== cityFilter) return false;
       if (foodFilter && !r.foodTypes.includes(foodFilter)) return false;
       return true;
     });
-  }, [cityFilter, foodFilter]);
+    return { filtered: filteredList, allCities: cities, allFoodTypes: foodTypes };
+  }, [reviews, cityFilter, foodFilter]);
 
   return (
     <Layout>
@@ -53,7 +57,11 @@ export default function Reviews() {
             )}
           </div>
 
-          {filtered.length === 0 ? (
+          {isLoading ? (
+            <p className="text-muted-foreground text-center py-20">Cargando reseñas...</p>
+          ) : error ? (
+            <p className="text-destructive text-center py-20">Error al cargar las reseñas. Comprueba la conexión a Supabase.</p>
+          ) : filtered.length === 0 ? (
             <p className="text-muted-foreground text-center py-20">No hay reseñas con esos filtros.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

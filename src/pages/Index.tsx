@@ -3,8 +3,9 @@ import { ArrowRight, Instagram } from "lucide-react";
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
 import ReviewCard from "@/components/ReviewCard";
-import { mockReviews } from "@/lib/mockData";
+import { useReviews } from "@/hooks/useReviews";
 import heroImage from "@/assets/hero-food.jpg";
+import logo from "@/assets/logo.png";
 
 const TikTokIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
@@ -13,7 +14,8 @@ const TikTokIcon = () => (
 );
 
 export default function Index() {
-  const latestReviews = mockReviews.slice(0, 3);
+  const { data: reviews = [] } = useReviews();
+  const latestReviews = reviews.slice(0, 3);
 
   return (
     <Layout>
@@ -30,11 +32,14 @@ export default function Index() {
             transition={{ duration: 0.8 }}
             className="max-w-xl"
           >
-            <h1 className="font-display text-5xl md:text-7xl font-bold text-primary-foreground mb-4 leading-tight">
-              hoytoca
-            </h1>
+            <div className="flex flex-col items-start gap-4 mb-4">
+             
+              <h1 className="font-display text-5xl md:text-7xl font-bold text-primary-foreground leading-tight">
+                HOYTOCA
+              </h1>
+            </div>
             <p className="text-lg md:text-xl text-primary-foreground/90 mb-8 font-body leading-relaxed">
-              Recomendaciones gastronómicas sinceras, cercanas y con mucho cariño. Descubre los mejores sitios para comer, beber y disfrutar.
+                Pienso planazos para que tu no tengas que hacerlo
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
@@ -44,10 +49,10 @@ export default function Index() {
                 Ver reseñas <ArrowRight className="h-4 w-4" />
               </Link>
               <div className="flex items-center gap-3">
-                <a href="https://instagram.com/hoytoca" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors p-2">
+                <a href="https://www.instagram.com/hoytoca__/" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors p-2">
                   <Instagram className="h-6 w-6" />
                 </a>
-                <a href="https://tiktok.com/@hoytoca" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors p-2">
+                <a href="https://www.tiktok.com/@hoytoca__?lang=es" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors p-2">
                   <TikTokIcon />
                 </a>
               </div>
@@ -92,7 +97,7 @@ export default function Index() {
           </p>
           <div className="flex justify-center gap-6">
             <a
-              href="https://instagram.com/hoytoca"
+              href="https://www.instagram.com/hoytoca__/"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-primary-foreground text-primary px-6 py-3 rounded-full font-medium text-sm hover:bg-primary-foreground/90 transition-colors"
@@ -100,7 +105,7 @@ export default function Index() {
               <Instagram className="h-5 w-5" /> Instagram
             </a>
             <a
-              href="https://tiktok.com/@hoytoca"
+              href="https://www.tiktok.com/@hoytoca__?lang=es"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 border border-primary-foreground/30 text-primary-foreground px-6 py-3 rounded-full font-medium text-sm hover:bg-primary-foreground/10 transition-colors"

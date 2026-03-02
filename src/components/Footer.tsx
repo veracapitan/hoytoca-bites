@@ -13,25 +13,28 @@ export default function Footer() {
       <div className="container py-12">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
-            <Link to="/" className="font-display text-2xl font-bold">hoytoca</Link>
+            <Link to="/" className="font-display text-2xl font-bold">
+            HOYTOCA
+          </Link>
             <p className="text-primary-foreground/70 text-sm mt-1">Recomendaciones gastronómicas con cariño ♥</p>
           </div>
           <nav className="flex items-center gap-6 text-sm">
             <Link to="/" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">Inicio</Link>
             <Link to="/resenas" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">Reseñas</Link>
-            <Link to="/sobre-mi" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">Sobre mí</Link>
           </nav>
           <div className="flex items-center gap-4">
-            <a href="https://instagram.com/hoytoca" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+            <a href="https://www.instagram.com/hoytoca__/" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
               <Instagram className="h-5 w-5" />
             </a>
-            <a href="https://tiktok.com/@hoytoca" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+            <a href="https://www.tiktok.com/@hoytoca__?lang=es" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
               <TikTokIcon />
             </a>
           </div>
         </div>
         <div className="mt-8 pt-6 border-t border-primary-foreground/20 text-center text-xs text-primary-foreground/50">
-          © {new Date().getFullYear()} hoytoca. Hecho con mucho amor y buena comida.
+          © {new Date().getFullYear()} HOYTOCA. Hecho con mucho amor y buena comida.
+          <span className="mx-1">·</span>
+          <Link to="/admin" className="text-primary-foreground/40 hover:text-primary-foreground/70 transition-colors">Admin</Link>
         </div>
       </div>
     </footer>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Instagram } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import logo from "@/assets/logo.png";
 
 const TikTokIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
@@ -12,7 +13,6 @@ const TikTokIcon = () => (
 const navLinks = [
   { to: "/", label: "Inicio" },
   { to: "/resenas", label: "Reseñas" },
-  { to: "/sobre-mi", label: "Sobre mí" },
 ];
 
 export default function Header() {
@@ -22,8 +22,11 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container flex items-center justify-between h-16">
-        <Link to="/" className="font-display text-2xl font-bold tracking-tight text-primary">
-          hoytoca
+        <Link to="/" className="flex items-center gap-2 shrink-0">
+          <span className="flex h-10 w-10 shrink-0 overflow-hidden rounded-full bg-primary">
+            <img src={logo} alt="" className="h-full w-full object-cover object-center" />
+          </span>
+          <span className="font-display text-2xl font-bold tracking-tight text-primary">HOYTOCA</span>
         </Link>
 
         {/* Desktop nav */}
@@ -40,10 +43,10 @@ export default function Header() {
             </Link>
           ))}
           <div className="flex items-center gap-3 ml-4">
-            <a href="https://instagram.com/hoytoca" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+            <a href="https://www.instagram.com/hoytoca__/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
               <Instagram className="h-5 w-5" />
             </a>
-            <a href="https://tiktok.com/@hoytoca" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+            <a href="https://www.tiktok.com/@hoytoca__?lang=es" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
               <TikTokIcon />
             </a>
           </div>
@@ -78,10 +81,10 @@ export default function Header() {
                 </Link>
               ))}
               <div className="flex items-center gap-4 pt-2">
-                <a href="https://instagram.com/hoytoca" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                <a href="https://www.instagram.com/hoytoca__/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                   <Instagram className="h-5 w-5" />
                 </a>
-                <a href="https://tiktok.com/@hoytoca" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                <a href="https://www.tiktok.com/@hoytoca__?lang=es" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                   <TikTokIcon />
                 </a>
               </div>
