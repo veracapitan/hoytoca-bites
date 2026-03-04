@@ -49,6 +49,7 @@ export default function Admin() {
   const [submitting, setSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [videoFiles, setVideoFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
 
@@ -112,6 +113,27 @@ export default function Admin() {
     return urls;
   };
 
+  const uploadVideos = async (slug: string): Promise<string[]> => {
+    if (!videoFiles.length) return [];
+    const urls: string[] = [];
+    const prefix = `${slug}/videos/${Date.now()}`;
+    for (let i = 0; i < videoFiles.length; i++) {
+      const file = videoFiles[i];
+      setUploadProgress(`Subiendo vídeo ${i + 1}/${videoFiles.length}…`);
+      const ext = file.name.split(".").pop() || "mp4";
+      const path = `${prefix}_${i}.${ext}`;
+      const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+      if (error) throw error;
+      const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
+      urls.push(data.publicUrl);
+    }
+    setUploadProgress(null);
+    return urls;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -124,11 +146,17 @@ export default function Admin() {
     try {
       await ensureBucket();
       const uploadedUrls = await uploadImages(slug);
+      const uploadedVideoUrls = await uploadVideos(slug);
       const extraUrls = form.images
         .split(/[\n,]/)
         .map((s) => s.trim())
         .filter(Boolean);
       const allImages = [...uploadedUrls, ...extraUrls];
+      const extraVideoUrls = form.videos
+        .split(/[\n,]/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const allVideos = [...uploadedVideoUrls, ...extraVideoUrls];
 
       const row: TablesInsert<"reviews"> = {
         name: form.name.trim(),
@@ -141,10 +169,7 @@ export default function Admin() {
           .filter(Boolean),
         visit_date: form.visit_date,
         images: allImages,
-        videos: form.videos
-          .split(/[\n,]/)
-          .map((s) => s.trim())
-          .filter(Boolean),
+        videos: allVideos,
         google_maps_url: form.google_maps_url.trim() || null,
         instagram_url: form.instagram_url.trim() || null,
         tiktok_url: form.tiktok_url.trim() || null,
@@ -154,6 +179,7 @@ export default function Admin() {
       toast.success("Restaurante añadido");
       setForm(initialForm);
       setImageFiles([]);
+      setVideoFiles([]);
       const data = await fetchReviews();
       setReviews(data);
       queryClient.invalidateQueries({ queryKey: ["reviews"] });
@@ -345,13 +371,44 @@ export default function Admin() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="videos">URLs de vídeos (opcional)</Label>
+                <Label>Vídeos del restaurante (opcional)</Label>
+                <p className="text-sm text-muted-foreground">
+                  Puedes subir vídeos cortos (MP4, WebM, MOV) o añadir enlaces externos (YouTube, TikTok, Instagram).
+                </p>
                 <Input
-                  id="videos"
-                  value={form.videos}
-                  onChange={(e) => setForm((p) => ({ ...p, videos: e.target.value }))}
-                  placeholder="https://..."
+                  type="file"
+                  accept="video/mp4,video/webm,video/quicktime"
+                  multiple
+                  className="cursor-pointer"
+                  onChange={(e) => setVideoFiles(Array.from(e.target.files ?? []))}
                 />
+                {videoFiles.length > 0 && (
+                  <ul className="mt-2 text-xs text-muted-foreground space-y-1">
+                    {videoFiles.map((file, i) => (
+                      <li key={i} className="flex items-center justify-between gap-2">
+                        <span className="truncate">{file.name}</span>
+                        <button
+                          type="button"
+                          onClick={() => setVideoFiles((prev) => prev.filter((_, j) => j !== i))}
+                          className="text-destructive hover:underline"
+                        >
+                          Quitar
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="space-y-1 mt-2">
+                  <Label htmlFor="videos" className="text-muted-foreground font-normal text-xs">
+                    URLs de vídeos adicionales (opcional, separadas por comas)
+                  </Label>
+                  <Input
+                    id="videos"
+                    value={form.videos}
+                    onChange={(e) => setForm((p) => ({ ...p, videos: e.target.value }))}
+                    placeholder="https://youtube.com/..., https://tiktok.com/..."
+                  />
+                </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
