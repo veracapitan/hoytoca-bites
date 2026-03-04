@@ -3,6 +3,16 @@ import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
 import ReviewCard from "@/components/ReviewCard";
 import { useReviews } from "@/hooks/useReviews";
+import { X } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const ALL = "all";
 
 export default function Reviews() {
   const [cityFilter, setCityFilter] = useState("");
@@ -30,31 +40,65 @@ export default function Reviews() {
           </motion.div>
 
           {/* Filters */}
-          <div className="flex flex-wrap gap-3 mb-10">
-            <select
-              value={cityFilter}
-              onChange={e => setCityFilter(e.target.value)}
-              className="bg-card border border-border rounded-full px-4 py-2 text-sm text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
-            >
-              <option value="">Todas las ciudades</option>
-              {allCities.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-            <select
-              value={foodFilter}
-              onChange={e => setFoodFilter(e.target.value)}
-              className="bg-card border border-border rounded-full px-4 py-2 text-sm text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
-            >
-              <option value="">Todos los tipos</option>
-              {allFoodTypes.map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
-            {(cityFilter || foodFilter) && (
-              <button
-                onClick={() => { setCityFilter(""); setFoodFilter(""); }}
-                className="text-sm text-primary hover:underline px-2"
-              >
-                Limpiar filtros
-              </button>
-            )}
+          <div className="mb-10 rounded-2xl border border-border bg-muted/40 px-4 py-3 flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Filtros
+              </span>
+              {(cityFilter || foodFilter) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCityFilter("");
+                    setFoodFilter("");
+                  }}
+                  className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-primary transition-colors"
+                >
+                  <X className="h-3 w-3" />
+                  Limpiar
+                </button>
+              )}
+            </div>
+
+            <div className="flex flex-1 flex-wrap gap-3">
+              <div className="w-full sm:w-56">
+                <Select
+                  value={cityFilter || ALL}
+                  onValueChange={(v) => setCityFilter(v === ALL ? "" : v)}
+                >
+                  <SelectTrigger className="rounded-full bg-card/90 shadow-sm">
+                    <SelectValue placeholder="Todas las ciudades" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ALL}>Todas las ciudades</SelectItem>
+                    {allCities.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="w-full sm:w-56">
+                <Select
+                  value={foodFilter || ALL}
+                  onValueChange={(v) => setFoodFilter(v === ALL ? "" : v)}
+                >
+                  <SelectTrigger className="rounded-full bg-card/90 shadow-sm">
+                    <SelectValue placeholder="Todos los tipos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ALL}>Todos los tipos</SelectItem>
+                    {allFoodTypes.map((t) => (
+                      <SelectItem key={t} value={t}>
+                        {t}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
 
           {isLoading ? (
